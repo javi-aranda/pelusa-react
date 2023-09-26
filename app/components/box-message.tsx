@@ -1,26 +1,35 @@
-import React from "react";
+import React, { Component } from "react";
 
-// TODO: This component could be improved
-export function BoxMessageError({ message }: { message: string }) {
-  return (
-    <div className="bg-red-800 text-white rounded-xl p-4">
-      <p className="text-sm">{message}</p>
-    </div>
-  );
+interface IProps {
+  message: string;
+  backgroundColor?: string;
 }
 
-export function BoxMessageSuccess({ message }: { message: string }) {
-  return (
-    <div className="bg-green-800 text-white rounded-xl p-4">
-      <p className="text-sm">{message}</p>
-    </div>
-  );
+
+class BoxMessage extends Component<IProps, {}> {
+  render() {
+    return (
+      <div className={`${this.props.backgroundColor} text-white rounded-xl p-4`}>
+        <p className="text-sm">{this.props.message}</p>
+      </div>
+    );
+  }
 }
 
-export function BoxMessageWarning({ message }: { message: string }) {
-  return (
-    <div className="bg-yellow-800 text-white rounded-xl p-4">
-      <p className="text-sm">{message}</p>
-    </div>
-  );
+export class BoxMessageError extends Component<IProps, {}> {
+  render() {
+    return <BoxMessage message={this.props.message} backgroundColor="bg-red-800" />;
+  }
+}
+
+export class BoxMessageSuccess extends Component<IProps, {}> {
+  render() {
+    return <BoxMessage message={this.props.message} backgroundColor="bg-green-800" />;
+  }
+}
+
+export class BoxMessageWarning extends Component<IProps, {}> {
+  render() {
+    return <BoxMessage message={this.props.message} backgroundColor="bg-yellow-800" />;
+  }
 }
