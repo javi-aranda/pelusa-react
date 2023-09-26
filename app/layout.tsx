@@ -1,18 +1,18 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Pelusa',
-  description: 'Predictive Engine for Legitimate & Unverified Site Assessment',
-}
+  title: "Pelusa",
+  description: "Predictive Engine for Legitimate & Unverified Site Assessment",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -28,5 +28,5 @@ export default function RootLayout({
         </section>
       </body>
     </html>
-  )
+  );
 }
