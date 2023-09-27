@@ -1,5 +1,7 @@
 # Pelusa React
 
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/javi-aranda/pelusa-react/master)
+
 ![Pelusa React](./resources/header.png)
 
 ## What is Pelusa?
