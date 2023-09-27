@@ -82,7 +82,11 @@ export default function SearchForm() {
       </form>
       <p className="text-xs text-zinc-200 dark:text-zinc-100">
         Made with ❤️ by @javi-aranda.&nbsp;
-        <a className="underline underline-offset-2 text-white" href="#">
+        <a
+          className="underline underline-offset-2 text-white"
+          href="https://github.com/javi-aranda/pelusa-react"
+          target="_blank"
+        >
           GitHub
         </a>
       </p>
