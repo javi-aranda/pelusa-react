@@ -27,7 +27,7 @@ export default function SearchForm() {
     }
     try {
       const response = await fetch(
-        `${process.env.API_ENDPOINT}/api/v1/analysis/`,
+        `${process.env.API_ENDPOINT}/api/v1/analysis`,
         {
           method: "POST",
           headers: {
@@ -63,7 +63,7 @@ export default function SearchForm() {
   };
 
   return (
-    <div className="w-full max-w-sm space-y-2 mx-auto">
+    <div className="w-full max-w-lg space-y-2 mx-auto">
       <form className="flex space-x-2" onSubmit={(e) => e.preventDefault()}>
         <input
           className="max-w-lg flex-1 bg-gray-700 text-white border-zinc-700 rounded-xl py-2 px-4 focus:outline-none focus:ring-2 focus:ring-zinc-50"
