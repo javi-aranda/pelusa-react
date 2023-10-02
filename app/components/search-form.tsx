@@ -42,7 +42,7 @@ export default function SearchForm() {
         if (data.prediction == 1) {
           setResultMessage({
             type: "warning",
-            message: "This site is could be dangerous!",
+            message: "This site could be dangerous!",
           });
         } else {
           setResultMessage({
