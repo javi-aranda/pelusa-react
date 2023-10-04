@@ -1,76 +1,74 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
-import {
-  BoxMessageError,
-  BoxMessageSuccess,
-  BoxMessageWarning,
-} from "./box-message";
+import { BoxMessage } from "./box-message";
+import useApi from "../hooks/useApi";
+import getPrediction from "../providers/apiPrediction";
+import { handlePreventDefault, isUrlValid } from "../shared/utils";
+import { MessageStatus } from "../shared/status";
+import { PredictionResult } from "../interfaces/PredictionResult";
 
 export default function SearchForm() {
   const [inputValue, setInputValue] = useState("");
-  const [resultMessage, setResultMessage] = useState({ type: "", message: "" });
+  const [resultMessage, setResultMessage] = useState({
+    type: MessageStatus.NONE,
+    message: "",
+  });
+  const predictionApi = useApi(getPrediction);
 
-  const isUrlValid = (input: string) => {
-    try {
-      new URL(input);
-      return true;
-    } catch (err) {
-      return false;
+  useEffect(() => {
+    if (predictionApi.data !== null) {
+      displayBoxMessage();
     }
+  }, [predictionApi.data]);
+
+  const handleInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
   };
 
   const handleCheckLink = async () => {
     if (!isUrlValid(inputValue)) {
-      return setResultMessage({ type: "error", message: "Invalid URL" });
-    }
-    try {
-      const response = await fetch(
-        `${process.env.API_ENDPOINT}/api/v1/analysis`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ input: inputValue }),
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.prediction == 1) {
-          setResultMessage({
-            type: "warning",
-            message: "This site could be dangerous!",
-          });
-        } else {
-          setResultMessage({
-            type: "success",
-            message: "This site seems legitimate",
-          });
-        }
-      } else {
-        throw new Error("Error in the API call");
-      }
-    } catch (error) {
       setResultMessage({
-        type: "error",
+        type: MessageStatus.WARNING,
+        message: "The URL provided is not valid, please review and try again.",
+      });
+      return;
+    }
+
+    await predictionApi.request(inputValue);
+  };
+
+  const displayBoxMessage = () => {
+    const predictionResult = predictionApi.data as unknown as PredictionResult;
+    if (predictionResult.prediction) {
+      setResultMessage({
+        type: MessageStatus.ERROR,
+        message: "This site could be dangerous!",
+      });
+    } else if (!predictionResult.prediction) {
+      setResultMessage({
+        type: MessageStatus.SUCCESS,
+        message: "This site seems legitimate.",
+      });
+    } else {
+      setResultMessage({
+        type: MessageStatus.WARNING,
         message:
-          "An error occurred while contacting with the API. Please, try again later.",
+          "The prediction service is not available, please try again later.",
       });
     }
   };
 
   return (
     <div className="w-full max-w-lg space-y-2 mx-auto">
-      <form className="flex space-x-2" onSubmit={(e) => e.preventDefault()}>
+      <form className="flex space-x-2" onSubmit={handlePreventDefault}>
         <input
           className="max-w-lg flex-1 bg-gray-700 text-white border-zinc-700 rounded-xl py-2 px-4 focus:outline-none focus:ring-2 focus:ring-zinc-50"
           type="text"
           placeholder="https://example.com/"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleInputValue}
         />
         <a
           href="#_"
@@ -90,17 +88,9 @@ export default function SearchForm() {
           GitHub
         </a>
       </p>
-      <p className="text-xs text-zinc-200 dark:text-zinc-100">
-        {resultMessage.type == "success" && (
-          <BoxMessageSuccess message={resultMessage.message} />
-        )}
-        {resultMessage.type == "warning" && (
-          <BoxMessageWarning message={resultMessage.message} />
-        )}
-        {resultMessage.type == "error" && (
-          <BoxMessageError message={resultMessage.message} />
-        )}
-      </p>
+      <div className="text-xs text-zinc-200 dark:text-zinc-100">
+        <BoxMessage message={resultMessage.message} type={resultMessage.type} />
+      </div>
     </div>
   );
 }
