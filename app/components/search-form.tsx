@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { BoxMessage } from "./box-message";
 import useApi from "../hooks/useApi";
@@ -17,11 +17,17 @@ export default function SearchForm() {
   });
   const predictionApi = useApi(getPrediction);
 
+  useEffect(() => {
+    if (predictionApi.data !== null) {
+      displayBoxMessage();
+    }
+  }, [predictionApi.data]);
+
   const handleInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
-  const handleCheckLink = () => {
+  const handleCheckLink = async () => {
     if (!isUrlValid(inputValue)) {
       setResultMessage({
         type: MessageStatus.WARNING,
@@ -30,29 +36,28 @@ export default function SearchForm() {
       return;
     }
 
-    predictionApi.request(inputValue).then(() => {
-      console.log(predictionApi);
+    await predictionApi.request(inputValue);
+  };
 
-      const predictionResult =
-        predictionApi.data as unknown as PredictionResult;
-      if (predictionResult && predictionResult.prediction) {
-        setResultMessage({
-          type: MessageStatus.ERROR,
-          message: "This site could be dangerous!",
-        });
-      } else if (predictionResult && !predictionResult.prediction) {
-        setResultMessage({
-          type: MessageStatus.SUCCESS,
-          message: "This site seems legitimate.",
-        });
-      } else {
-        setResultMessage({
-          type: MessageStatus.WARNING,
-          message:
-            "The prediction service is not available, please try again later.",
-        });
-      }
-    });
+  const displayBoxMessage = () => {
+    const predictionResult = predictionApi.data as unknown as PredictionResult;
+    if (predictionResult.prediction) {
+      setResultMessage({
+        type: MessageStatus.ERROR,
+        message: "This site could be dangerous!",
+      });
+    } else if (!predictionResult.prediction) {
+      setResultMessage({
+        type: MessageStatus.SUCCESS,
+        message: "This site seems legitimate.",
+      });
+    } else {
+      setResultMessage({
+        type: MessageStatus.WARNING,
+        message:
+          "The prediction service is not available, please try again later.",
+      });
+    }
   };
 
   return (
